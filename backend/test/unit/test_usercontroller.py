@@ -1,5 +1,7 @@
 import pytest
-from src.util.helpers import hasAttribute
+from unittest.mock import Mock, patch # Load the mocking library
+import re
+from src.controllers.usercontroller import UserController
 
 # Arrange: setup all preconditions of the test
 # Act: let the system under test perform an operation
@@ -20,3 +22,36 @@ from src.util.helpers import hasAttribute
 # Variable fixtures: fixtures encapsulate the setup of the SUT, but a variable parameter makes fixtures difficult
 # If you want to see hoe pytest handles fixture setup: run pytest command with -setup-show
 # Debugging with prints: -capture=no will allow you to print the console
+
+class TestUserController:
+    @pytest.fixture
+    def user_controller(self):
+        """Fixture that creates a UserController with a mocked DAO."""
+        # Create a mock object to simulate the DAO (database access)
+        mocked_dao = Mock()
+        # Return a UserController that uses the mocked DAO
+        return UserController(dao=mocked_dao)
+    
+    def test_valid_email_one_user(self, user_controller):
+        """test case 1: valid email one user found"""
+
+    def test_valid_email_no_users(self, user_controller):
+        """test case 2: valid email no users found"""
+
+    def test_valid_email_multiple_users(self, user_controller, capfd):
+        """test case 3: valid email multiple users found"""
+
+    def test_empty_string_email(self, user_controller):
+        """test case 4: empty string email"""
+
+    def test_invalid_email(self, user_controller):
+        """test case 5: invalid email"""
+
+    def test_case_variation_email(self, user_controller):
+        """test case 6: case variation email"""
+
+    def test_none_as_email(self, user_controller):
+        """test case 7: None as email"""
+
+    def test_dao_raises_exception(self, user_controller):
+        """test case 8: DAO raises exception"""
