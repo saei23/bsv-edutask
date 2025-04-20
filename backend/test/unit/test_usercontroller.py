@@ -34,6 +34,22 @@ class TestUserController:
     
     def test_valid_email_one_user(self, user_controller):
         """test case 1: valid email one user found"""
+        # Mock the DAO to return one user
+        mocked_user = {"email": "test@example.com", "name": "Test User"}
+
+        # Mock the DAO to return a list containing the mocked user
+        user_controller.dao.find.return_value = [mocked_user]
+
+        # Use patch to mock function to always return True
+        # This is done to simulate a valid email format
+        with patch('src.controllers.usercontroller.re.fullmatch') as mocked_regex:
+            mocked_regex.return_value = True
+
+            # Call the function with a test email
+            result = user_controller.get_user_by_email("test@example.com")
+            
+            # Assert that the result is the mocked user object
+            assert result == mocked_user
 
     def test_valid_email_no_users(self, user_controller):
         """test case 2: valid email no users found"""
