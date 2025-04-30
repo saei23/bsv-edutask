@@ -6,7 +6,6 @@ from pymongo.errors import WriteError, DuplicateKeyError
 from src.util.dao import DAO
 from src.util.validators import getValidator
 
-
 class TestDAOCreate:
     @pytest.fixture
     def dao(self, monkeypatch):
@@ -14,44 +13,44 @@ class TestDAOCreate:
         Fixture that sets MONGO_URL and returns a DAO for a test collection.
         Drops the collection before and after each test to avoid interference.
         """
-        # # Set the environment variable for MongoDB URL
-        # monkeypatch.setenv("MONGO_URL", "mongodb://localhost:27017")
-
-        # # Define the test collection
-        # test_collection = "user" # matches src/static/validators/user.json
-        
-        # # Create DAO instance and reset before/after the test
-        # dao = DAO(test_collection)
-        # dao.drop() # Drop collection before test if it exists
-        # yield dao
-        # dao.drop() # Drop collection after the test
+        # Set the environment variable for MongoDB URL
         monkeypatch.setenv("MONGO_URL", "mongodb://localhost:27017")
 
-        test_collection = "user"
-
-        # Koppla direkt till databasen och skapa om collectionen med validering
-        client = pymongo.MongoClient("mongodb://localhost:27017")
-        db = client.edutask
-        db.drop_collection(test_collection)
-
-        validator = getValidator(test_collection)
-
-        db.create_collection(
-            test_collection,
-            validator=validator,
-            validationLevel='strict',
-            validationAction='error'
-        )
-
-        db[test_collection].create_index("email", unique=True)
-
-        # Skapa DAO efter att collectionen är korrekt konfigurerad
+        # Define the test collection
+        test_collection = "user" # matches src/static/validators/user.json
+        
+        # Create DAO instance and reset before/after the test
         dao = DAO(test_collection)
-
+        dao.drop() # Drop collection before test if it exists
         yield dao
+        dao.drop() # Drop collection after the test
+        # monkeypatch.setenv("MONGO_URL", "mongodb://localhost:27017")
 
-        # Rensa efter test
-        dao.drop()
+        # test_collection = "user"
+
+        # # Koppla direkt till databasen och skapa om collectionen med validering
+        # client = pymongo.MongoClient("mongodb://localhost:27017")
+        # db = client.edutask
+        # db.drop_collection(test_collection)
+
+        # validator = getValidator(test_collection)
+
+        # db.create_collection(
+        #     test_collection,
+        #     validator=validator,
+        #     validationLevel='strict',
+        #     validationAction='error'
+        # )
+
+        # db[test_collection].create_index("email", unique=True)
+
+        # # Skapa DAO efter att collectionen är korrekt konfigurerad
+        # dao = DAO(test_collection)
+
+        # yield dao
+
+        # # Rensa efter test
+        # dao.drop()
     
     def test_create_valid_object(self, dao):
         """Test creating a valid document in the collection."""
