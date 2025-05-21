@@ -23,3 +23,27 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('login', (email) => {
+    // Skriv in e-postadress
+    cy.get('#email').type(email);
+
+    // Tryck på submit-knappen
+    cy.get('input[type="submit"]').click();
+
+    // Vänta tills användaren är inloggad (t.ex. att /login inte finns i URL)
+    cy.url().should('not.include', '/login');
+});
+
+Cypress.Commands.add('ensureTaskExists', () => {
+  cy.get('body').then(($body) => {
+    const taskElements = $body.find('.container-element, .task-item, [data-testid="task"]');
+    
+    if (taskElements.length === 0) {
+      cy.get('input[placeholder*="Task"], input[name="title"], .task-input').first()
+        .type('Test Task för Todo-hantering');
+      cy.get('button').contains(/add|create|submit/i).click();
+      cy.wait(1000);
+    }
+  });
+});
