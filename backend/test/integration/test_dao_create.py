@@ -2,7 +2,7 @@ import pytest
 import pymongo
 from unittest.mock import Mock, patch
 from pymongo.errors import WriteError
-
+from src.util.validators import getValidator
 from src.util.dao import DAO
 
 class TestDAOCreate:
@@ -20,37 +20,9 @@ class TestDAOCreate:
         
         # Create DAO instance and reset before/after the test
         dao = DAO(test_collection)
-        dao.drop() # Drop collection before test if it exists
+        # dao.drop() # Drop collection before test if it exists
         yield dao
         dao.drop() # Drop collection after the test
-
-        # monkeypatch.setenv("MONGO_URL", "mongodb://localhost:27017")
-
-        # test_collection = "user"
-
-        # # Koppla direkt till databasen och skapa om collectionen med validering
-        # client = pymongo.MongoClient("mongodb://localhost:27017")
-        # db = client.edutask
-        # db.drop_collection(test_collection)
-
-        # validator = getValidator(test_collection)
-
-        # db.create_collection(
-        #     test_collection,
-        #     validator=validator,
-        #     validationLevel='strict',
-        #     validationAction='error'
-        # )
-
-        # db[test_collection].create_index("email", unique=True)
-
-        # # Skapa DAO efter att collectionen är korrekt konfigurerad
-        # dao = DAO(test_collection)
-
-        # yield dao
-
-        # # Rensa efter test
-        # dao.drop()
     
     def test_create_valid_object(self, dao):
         """Test creating a valid document in the collection."""
