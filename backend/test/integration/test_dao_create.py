@@ -1,7 +1,7 @@
 import pytest
 import pymongo
 from unittest.mock import Mock, patch
-from pymongo.errors import WriteError, DuplicateKeyError
+from pymongo.errors import WriteError
 
 from src.util.dao import DAO
 
