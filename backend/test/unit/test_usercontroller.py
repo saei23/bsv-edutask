@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 import re
 from src.controllers.usercontroller import UserController
 
@@ -20,56 +20,51 @@ class TestUserController:
         # Mock the DAO to return a list containing the mocked user
         user_controller.dao.find.return_value = [mocked_user]
 
-        # Use patch to mock function to always return True
-        # This is done to simulate a valid email format
-        with patch('src.controllers.usercontroller.re.fullmatch') as mocked_regex:
-            mocked_regex.return_value = True
-
-            # Call the function with a test email
-            result = user_controller.get_user_by_email("test@example.com")
-            
-            # Assert that the result is the mocked user object
-            assert result == mocked_user
+        # Call the function with a test email
+        result = user_controller.get_user_by_email("test@example.com")
+        
+        # Assert that the result is the mocked user object
+        assert result == mocked_user
 
     def test_valid_email_no_users(self, user_controller):
         """test case 2: valid email no users found"""
         # Mock the DAO to return an empty list (no users found)
         user_controller.dao.find.return_value = []
 
-        # Use patch to mock function to always return True
-        # This is done to simulate a valid email format        
-        with patch('src.controllers.usercontroller.re.fullmatch') as mocked_regex:
-            mocked_regex.return_value = True
+        # Call the function with a test email
+        result = user_controller.get_user_by_email("test@example.com")
 
-            # Call the function with a test email
-            result = user_controller.get_user_by_email("test@example.com")
+        # Assert that the function returns None when no user is found
+        assert result is None
 
-            # Assert that the function returns None when no user is found
-            assert result is None
-
-    def test_valid_email_multiple_users(self, user_controller, capfd):
-        """test case 3: valid email multiple users found"""
+    def test_valid_email_multiple_users_returns_first_user(self, user_controller):
+        """test case 3a: valid email multiple users found returns first user"""
         # Mock the DAO to return a list with multiple users
         mocked_user_1 = {"email": "test@example.com", "name": "Test User 1"}
         mocked_user_2 = {"email": "test@example.com", "name": "Test User 2"}
         user_controller.dao.find.return_value = [mocked_user_1, mocked_user_2]
 
-        # Use patch to mock function to always return True
-        # This is done to simulate a valid email format        
-        with patch('src.controllers.usercontroller.re.fullmatch') as mocked_regex:
-            mocked_regex.return_value = True
+        # Call the function with a test email
+        result = user_controller.get_user_by_email("test@example.com")
 
-            # Call the function with a test email
-            result = user_controller.get_user_by_email("test@example.com")
+        # Assert that the result is the first user object
+        assert result == mocked_user_1
 
-            # # Assert that the result is the first user object
-            assert result == mocked_user_1
+    def test_valid_email_multiple_users_prints_warning(self, user_controller, capfd):
+        """test case 3b: valid email multiple users found prints warning"""
+        # Mock the DAO to return a list with multiple users
+        mocked_user_1 = {"email": "test@example.com", "name": "Test User 1"}
+        mocked_user_2 = {"email": "test@example.com", "name": "Test User 2"}
+        user_controller.dao.find.return_value = [mocked_user_1, mocked_user_2]
 
-            # Capture printed output
-            out, _ = capfd.readouterr()
+        # Call the function with a test email
+        user_controller.get_user_by_email("test@example.com")
 
-            # Assert: some warning was printed (without assuming exact wording)
-            assert out.strip() != ""
+        # Capture printed output
+        out, _ = capfd.readouterr()
+
+        # Assert: some warning was printed (without assuming exact wording)
+        assert out.strip() != ""
 
     def test_empty_string_email(self, user_controller):
         """test case 4: empty string email"""
@@ -88,10 +83,6 @@ class TestUserController:
         # Mock the DAO to raise an exception when find() is called
         user_controller.dao.find.side_effect = Exception() # Simulate database failure
 
-        # Patch regex to simulate valid email
-        with patch("src.controllers.usercontroller.re.fullmatch") as mocked_regex:
-            mocked_regex.return_value = True
-
-            # Assert that get_user_by_email raises an Exception
-            with pytest.raises(Exception):
-                user_controller.get_user_by_email("test@example.com")
+        # Assert that get_user_by_email raises an Exception
+        with pytest.raises(Exception):
+            user_controller.get_user_by_email("test@example.com")
