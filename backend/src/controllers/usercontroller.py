@@ -1,6 +1,5 @@
 from src.controllers.controller import Controller
 from src.util.dao import DAO
-
 import re
 emailValidator = re.compile(r'.*@.*')
 
@@ -10,7 +9,6 @@ emailValidator = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
 class UserController(Controller):
     def __init__(self, dao: DAO):
         super().__init__(dao=dao)
-
     
     def get_user_by_email(self, email: str):
         """Given a valid email address of an existing account, return the user object contained in the database associated 
@@ -34,7 +32,7 @@ class UserController(Controller):
         # Validera email format
         if not re.fullmatch(emailValidator, email):
             raise ValueError('Error: invalid email address')
-
+        
         try:
             users = self.dao.find({'email': email})
 
@@ -46,14 +44,12 @@ class UserController(Controller):
                 return users[0]
             # Om flera användare hittas, printa varning och returnera första
             else:
-                print(f'Error: more than one user found with mail {email}')
                 print(f'Warning: multiple users found with email {email}')
                 return users[0]
-
+                
         except Exception as e:
             # Låt undantaget propagera uppåt
             raise
-
     
     def update(self, id, data):
         try:
